@@ -43,18 +43,23 @@ async function run() {
       const result = await productsCollection.deleteOne(query);
       res.send(result);
     });
+
     app.patch("/products/:id", async (req, res) => {
       const id = req.params.id;
-      const status = req.body.status;
-      const query = { _id: ObjectId(id) };
+      const {title, sale, quantity } = req.body;
+      const query = {_id: ObjectId(id)};
       const updatedDoc = {
         $set: {
           title: title,
-          price: price,
-
-        },
+          sale: sale,
+          quantity: quantity,
+        }
       };
-      const result = await productsCollection.updateOne(query, updatedDoc);
+      const result = await productsCollection.updateOne(query, updatedDoc,
+        {
+          $upsert: true
+        }
+        );
       res.send(result);
     });
 
@@ -106,11 +111,11 @@ async function run() {
 run().catch((error) => console.log(error));
 
 app.get("/", (req, res) => {
-  res.send("healthOS server running(repliq)...!!");
+  res.send(" Server running(repliq)...!!");
 });
 
 app.listen(port, (req, res) => {
-  console.log("healthOS-rep", port);
+  console.log("Server-rep", port);
 });
 
 module.exports = app;
